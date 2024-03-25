@@ -1,0 +1,13 @@
+syntax = "proto3"; 
+package mock.v1;
+import "google/protobuf/empty.proto";
+
+option go_package = "iotvisual/internal/mock_v1;mock_v1";
+
+service MockService {
+    rpc GetSoundFile(GetSoundFileRequest) returns (google.protobuf.Empty){}
+}
+
+message GetSoundFileRequest {
+    string file_path = 1;
+}
