@@ -38,7 +38,7 @@ func (s *Server) GetSoundFile(ctx context.Context, request *mock_v1.GetSoundFile
 			continue
 		}
 		token := s.MqttClient.Publish("iotvisual", 0, false, msg)
-		s.Logger.Info().Msgf("Sending result: %t \n With error: %s", token.Wait(), token.Error().Error())
+		s.Logger.Info().Msgf("Sending result: %t \n With error: %v", token.Wait(), token.Error())
 	}
 
 	return nil, nil
