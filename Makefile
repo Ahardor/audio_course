@@ -1,8 +1,11 @@
 .PHONY:
 	gen \
 	up \
+	mac-up \
 	down \
+	mac-down \
 	purge \
+	mac-purge \
 
 gen: 
 	mkdir -p mock/internal
@@ -19,3 +22,13 @@ down:
 purge:
 	sudo docker compose down
 	sudo docker system prune -a
+
+mac-up:
+	docker-compose up
+
+mac-down:
+	docker-compose down
+
+mac-purge:
+	docker-compose down
+	docker system prune -a

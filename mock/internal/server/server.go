@@ -8,11 +8,14 @@ import (
 	"strings"
 	"time"
 
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+
 	"github.com/rs/zerolog"
 )
 
 type Server struct {
-	Logger zerolog.Logger
+	Logger     zerolog.Logger
+	MqttClient mqtt.Client
 	mock_v1.UnimplementedMockServiceServer
 }
 
@@ -35,5 +38,16 @@ func initLogger(src io.Writer) zerolog.Logger {
 func InitServer() *Server {
 	server := Server{}
 	server.Logger = initLogger(os.Stdout)
+
+	server.MqttClient = mqtt.NewClient(
+		mqtt.NewClientOptions().
+			AddBroker("tcp://mosquitto:1883").
+			SetClientID("app_generator"),
+	)
+
+	if appToken := server.MqttClient.Connect(); appToken.Wait() && appToken.Error() != nil {
+		panic(appToken.Error())
+	}
+
 	return &server
 }

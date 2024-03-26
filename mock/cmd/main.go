@@ -26,17 +26,6 @@ func main() {
 		server.Logger.Fatal().Msgf("Server start error: %s", err.Error())
 	}
 
-	// time.Sleep(time.Second * 2)
-	// client := mqtt.NewClient(
-	// 	mqtt.NewClientOptions().
-	// 		AddBroker("tcp://mosquitto:1883").
-	// 		SetClientID("app_generator"),
-	// )
-
-	// if appToken := client.Connect(); appToken.Wait() && appToken.Error() != nil {
-	// 	panic(appToken.Error())
-	// }
-
 	// for i := 0; i < 100; i++ {
 	// 	time.Sleep(3 * time.Second)
 	// 	s := Sound{

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"iotvisual/mock/internal/mock/api/mock_v1"
 	"os"
@@ -29,6 +30,16 @@ func (s *Server) GetSoundFile(ctx context.Context, request *mock_v1.GetSoundFile
 	if err = yaml.Unmarshal(bytes, &notes); err != nil {
 		return nil, err
 	}
-	fmt.Println(notes)
+
+	for _, note := range notes {
+		msg, err := json.Marshal(note)
+		if err != nil {
+			s.Logger.Err(err).Msg("Error on json marshall")
+			continue
+		}
+		token := s.MqttClient.Publish("iotvisual", 0, false, msg)
+		s.Logger.Info().Msgf("Sending result: %t \n With error: %s", token.Wait(), token.Error().Error())
+	}
+
 	return nil, nil
 }
