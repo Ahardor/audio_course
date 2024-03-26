@@ -6,6 +6,10 @@ services:
     build: 
       context: .
       dockerfile: ./mock/Dockerfile
+    volumes:
+      - ./mock_data:/app/data
+    ports:
+      - "7249:7249"
     depends_on:
       - mosquitto
       - influxdb

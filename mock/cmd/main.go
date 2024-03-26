@@ -12,17 +12,12 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-type Sound struct {
-	Frequency int `json:"frequency"`
-	Length    int `json:"length"`
-}
-
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 6969))
+	server := server.InitServer()
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 7249))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	server := server.InitServer()
 	s := grpc.NewServer()
 	reflection.Register(s)
 	mock_v1.RegisterMockServiceServer(s, server)
