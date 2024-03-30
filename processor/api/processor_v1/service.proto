@@ -1,0 +1,40 @@
+syntax = "proto3"; 
+package mock.v1;
+import "google/protobuf/empty.proto";
+
+option go_package = "iotvisual/processor/internal/processor_v1;processor_v1";
+
+service ProcessorService {
+    rpc GetMockTemplate(GetMockTemplateRequest) returns (google.protobuf.Empty){}
+}
+
+message GetMockTemplateRequest {
+    message Partition {
+        int32 sequential_number = 1;
+        Note note = 2;
+        int32 milliseconds = 3;
+    }
+    string template_name = 1;
+    repeated Partition partitions = 2;
+}
+
+enum Note {
+    NOTE_UNKNOWN = 0;
+    NOTE_C = 1;
+	NOTE_CD = 2;
+	NOTE_DB = 3;
+	NOTE_D = 4;
+	NOTE_DD = 5;
+	NOTE_EB = 6;
+	NOTE_E = 7;
+	NOTE_F = 8;
+	NOTE_FD = 9;
+	NOTE_GB = 10;
+	NOTE_G = 11;
+	NOTE_GD = 12;
+	NOTE_AB = 13;
+	NOTE_A = 14;
+	NOTE_AD = 15;
+	NOTE_BB = 16;
+	NOTE_B = 17;
+}
