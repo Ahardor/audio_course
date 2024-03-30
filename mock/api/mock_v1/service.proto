@@ -10,4 +10,6 @@ service MockService {
 
 message GetSoundFileRequest {
     string file_path = 1;
+    string template_name = 2;
+    string device_id = 3;
 }

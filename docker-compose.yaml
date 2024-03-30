@@ -17,6 +17,22 @@ services:
     networks:
       - default
 
+  processor:
+    container_name: processor
+    build: 
+      context: .
+      dockerfile: ./processor/Dockerfile
+    volumes:
+      - ./processor_data:/app/data
+    ports:
+      - "7259:7259"
+    depends_on:
+      - mosquitto
+      - influxdb
+      - telegraf
+    networks:
+      - default
+
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto:latest

@@ -1,6 +1,6 @@
 .PHONY:
 	gen-mock \
-	gen-process \
+	gen-processor \
 	up \
 	mac-up \
 	down \
@@ -14,7 +14,7 @@ gen-mock:
 		--go-grpc_out=mock/internal --go-grpc_opt=paths=source_relative \
 		mock/api/mock_v1/service.proto
 
-gen-process: 
+gen-processor: 
 	mkdir -p processor/internal
 	protoc --go_out=processor/internal --go_opt=paths=source_relative \
 		--go-grpc_out=processor/internal --go-grpc_opt=paths=source_relative \
