@@ -9,7 +9,7 @@ type NoteTable struct {
 	notes noteFrequencies
 	// Минимальные дельты частот по октавам.
 	// Используются в качестве погрешности для определения ноты.
-	// Берется минимальная разница по октаве = freq(C) - freq(C#/Db) Hz
+	// Берется половина от минимальной разницы по октаве = (freq(C) - freq(C#/Db))/2 - 1 Hz
 	deltas [OctavesCount]int
 }
 
@@ -50,7 +50,7 @@ func InitTable() NoteTable {
 	}
 
 	for oct := 0; oct < OctavesCount; oct++ {
-		nt.deltas[oct] = int(nt.notes[NoteCd][oct] - nt.notes[NoteC][oct])
+		nt.deltas[oct] = int(nt.notes[NoteCd][oct]-nt.notes[NoteC][oct])/2 - 1
 	}
 	return nt
 }
