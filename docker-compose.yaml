@@ -55,16 +55,6 @@ services:
     networks:
       - default
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   ports:
-  #     - '3000:3000'
-  #   depends_on:
-  #     - influxdb
-  #   environment:
-  #     - GF_SECURITY_ADMIN_USER=admin
-  #     - GF_SECURITY_ADMIN_PASSWORD=password
-
 networks:
   default:
     driver: bridge

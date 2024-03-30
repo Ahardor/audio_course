@@ -7,7 +7,6 @@ import (
 	"log"
 	"net"
 
-	//mqtt "github.com/eclipse/paho.mqtt.golang"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -25,17 +24,4 @@ func main() {
 	if err = s.Serve(lis); err != nil {
 		server.Logger.Fatal().Msgf("Server start error: %s", err.Error())
 	}
-
-	// for i := 0; i < 100; i++ {
-	// 	time.Sleep(3 * time.Second)
-	// 	s := Sound{
-	// 		Frequency: rand.Intn(20) + 20,
-	// 		Length:    rand.Intn(3) + 1,
-	// 	}
-	// 	msg, _ := json.Marshal(s)
-	// 	token := client.Publish("iotvisual", 0, false, msg)
-	// 	fmt.Printf("Published message: %#v\n", s)
-	// 	fmt.Println("Everything's OK: ", token.Wait())
-	// }
-
 }

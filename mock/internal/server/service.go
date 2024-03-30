@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"iotvisual/mock/internal/mock/api/mock_v1"
 	"os"
+	"time"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gopkg.in/yaml.v3"
@@ -38,7 +39,8 @@ func (s *Server) GetSoundFile(ctx context.Context, request *mock_v1.GetSoundFile
 			continue
 		}
 		token := s.MqttClient.Publish("iotvisual", 0, false, msg)
-		s.Logger.Info().Msgf("Sending result: %t \n With error: %v", token.Wait(), token.Error())
+		s.Logger.Info().Msgf("Sending result: %t, with error: %v", token.Wait(), token.Error())
+		time.Sleep(time.Duration(note.Length) * time.Second)
 	}
 
 	return nil, nil
