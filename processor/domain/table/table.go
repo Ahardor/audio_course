@@ -75,7 +75,7 @@ func (nt NoteTable) FindNote(freq float64) note.Note {
 			if frequency.IsApproximatelyEqual(f, noteEntry.Frequencies[column], nt.deltas[column]) {
 				return noteEntry.Note
 			}
-			if f < (nt.notes[row+1].Frequencies[column] - frequency.Frequency(nt.deltas[column])) {
+			if row < lan(nt) && f < (nt.notes[row+1].Frequencies[column] - frequency.Frequency(nt.deltas[column])) {
 				return note.NoteUnknown
 			}
 		}
