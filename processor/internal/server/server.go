@@ -44,7 +44,6 @@ func InitServer() *Server {
 			AddBroker("tcp://mosquitto:1883").
 			SetClientID("app_processor"),
 	)
-
 	if appToken := server.MqttClient.Connect(); appToken.Wait() && appToken.Error() != nil {
 		panic(appToken.Error())
 	}

@@ -23,13 +23,14 @@ services:
       context: .
       dockerfile: ./processor/Dockerfile
     volumes:
-      - ./processor_data:/app/data
+      - ./volumes/processor_data:/app/data
     ports:
       - "7259:7259"
     depends_on:
       - mosquitto
       - influxdb
       - telegraf
+      - cassandra
     networks:
       - default
 
@@ -37,7 +38,7 @@ services:
     container_name: mosquitto
     image: eclipse-mosquitto:latest
     volumes:
-      - ./mock/mosquitto:/mosquitto/config
+      - ./volumes/mosquitto:/mosquitto/config
     ports:
       - "1883:1883"
     restart: unless-stopped
@@ -48,7 +49,7 @@ services:
     container_name: telegraf
     image: telegraf:1.30-alpine
     volumes:
-      - ./mock/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+      - ./volumes/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
     depends_on:
       - influxdb
     restart: unless-stopped
@@ -70,6 +71,15 @@ services:
     - "8086:8086"
     networks:
       - default
+
+  cassandra:
+    container_name: cassandra
+    image: cassandra:latest
+    ports:
+      - "7000:7000"
+    networks:
+      - default
+
 
 networks:
   default:
