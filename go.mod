@@ -2,6 +2,8 @@ module iotvisual
 
 go 1.21.7
 
+replace github.com/gocql/gocql => github.com/scylladb/gocql v1.13.0
+
 require (
 	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/rs/zerolog v1.32.0

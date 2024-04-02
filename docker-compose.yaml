@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./mock/Dockerfile
     volumes:
-      - ./mock_data:/app/data
+      - ./volumes/mock_data:/app/data
     ports:
       - "7249:7249"
     depends_on:
@@ -26,11 +26,6 @@ services:
       - ./volumes/processor_data:/app/data
     ports:
       - "7259:7259"
-    depends_on:
-      - mosquitto
-      - influxdb
-      - telegraf
-      - cassandra
     networks:
       - default
 
@@ -71,15 +66,6 @@ services:
     - "8086:8086"
     networks:
       - default
-
-  cassandra:
-    container_name: cassandra
-    image: cassandra:latest
-    ports:
-      - "7000:7000"
-    networks:
-      - default
-
 
 networks:
   default:

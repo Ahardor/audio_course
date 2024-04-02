@@ -13,8 +13,8 @@ import (
 )
 
 type Note struct {
-	Frequency int `yaml:"frequency"`
-	Length    int `yaml:"length"`
+	Frequency float64 `yaml:"frequency"`
+	Length    int     `yaml:"length"`
 }
 
 func (s *Server) GetSoundFile(ctx context.Context, request *mock_v1.GetSoundFileRequest) (*emptypb.Empty, error) {
