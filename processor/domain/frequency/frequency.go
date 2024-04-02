@@ -15,6 +15,9 @@ const (
 // Frequency - частота ноты для октавы в базовых единицах.
 type Frequency int
 
+// Octave - октава.
+type Octave int
+
 // List - набор частот, характерных для ноты в 0-8 октавах.
 type List [OctavesCount]Frequency
 

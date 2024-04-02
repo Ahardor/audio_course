@@ -18,10 +18,46 @@ import (
 )
 
 type Server struct {
-	Logger     zerolog.Logger
-	MqttClient mqtt.Client
-	client     *mongo.Client
+	Logger zerolog.Logger
+	Mqtt   *mqtt.Client
+	Db     *mongo.Client
 	processor_v1.UnimplementedProcessorServiceServer
+}
+
+type Option func(s *Server)
+
+func New(opts ...Option) *Server {
+	s := &Server{}
+
+	for i := range opts {
+		opts[i](s)
+	}
+
+	return s
+}
+
+func WithLogger() Option {
+	return func(s *Server) { s.Logger = initLogger(os.Stdout) }
+}
+
+func WithMQTTClient() Option {
+	return func(s *Server) {
+		client, err := initMQTT()
+		if err != nil {
+			log.Fatal("failed to initialize mqtt: %w", err)
+		}
+		s.Mqtt = client
+	}
+}
+
+func WithDatabase() Option {
+	return func(s *Server) {
+		client, err := initDatabase()
+		if err != nil {
+			log.Fatal("failed to initialize database: %w", err)
+		}
+		s.Db = client
+	}
 }
 
 func initLogger(src io.Writer) zerolog.Logger {
@@ -40,28 +76,24 @@ func initLogger(src io.Writer) zerolog.Logger {
 	return logger
 }
 
-func InitServer() *Server {
-	server := Server{}
-	server.Logger = initLogger(os.Stdout)
-
-	server.MqttClient = mqtt.NewClient(
-		mqtt.NewClientOptions().
-			AddBroker("tcp://mosquitto:1883").
-			SetClientID("app_processor"),
-	)
-	if appToken := server.MqttClient.Connect(); appToken.Wait() && appToken.Error() != nil {
-		panic(appToken.Error())
-	}
-	server.initDatabase()
-	return &server
-}
-
-func (s *Server) initDatabase() {
+func initDatabase() (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://mongo"))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	s.client = client
+	return client, nil
+}
+
+func initMQTT() (*mqtt.Client, error) {
+	client := mqtt.NewClient(
+		mqtt.NewClientOptions().
+			AddBroker("tcp://mosquitto:1883").
+			SetClientID("app_processor"),
+	)
+	if appToken := client.Connect(); appToken.Wait() && appToken.Error() != nil {
+		return nil, appToken.Error()
+	}
+	return &client, nil
 }

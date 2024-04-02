@@ -1,7 +1,10 @@
 package note
 
-import "fmt"
+import (
+	"fmt"
+)
 
+// Note - музыкальная нота.
 type Note int
 
 const (

@@ -1,10 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"iotvisual/processor/internal/processor/api/processor_v1"
 	"iotvisual/processor/internal/server"
-	"log"
 	"net"
 
 	"google.golang.org/grpc"
@@ -12,16 +12,27 @@ import (
 )
 
 func main() {
-	server := server.InitServer()
+	appCtx := context.Background()
+	s := server.New(
+		server.WithLogger(),
+		server.WithDatabase(),
+		server.WithMQTTClient(),
+	)
+	defer func() {
+		if err := s.Db.Disconnect(appCtx); err != nil {
+			panic(err)
+		}
+	}()
+
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 7259))
 	if err != nil {
-		log.Fatal(err.Error())
+		s.Logger.Fatal().Msgf("server listen error: %s", err.Error())
 	}
-	s := grpc.NewServer()
-	reflection.Register(s)
-	processor_v1.RegisterProcessorServiceServer(s, server)
+	serv := grpc.NewServer()
+	reflection.Register(serv)
+	processor_v1.RegisterProcessorServiceServer(serv, s)
 
-	if err = s.Serve(lis); err != nil {
-		server.Logger.Fatal().Msgf("Server start error: %s", err.Error())
+	if err = serv.Serve(lis); err != nil {
+		s.Logger.Fatal().Msgf("server start error: %s", err.Error())
 	}
 }

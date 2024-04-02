@@ -24,7 +24,7 @@ type NoteTable struct {
 }
 
 // Deltas возвращает погрешность по заданной октаве.
-func (nt NoteTable) Deltas(octave int) (int, bool) {
+func (nt NoteTable) Deltas(octave frequency.Octave) (int, bool) {
 	if octave >= 9 || octave < 0 {
 		return -1, false
 	}
