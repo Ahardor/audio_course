@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  processor:
+    container_name: processor
+    build: 
+      context: .
+      dockerfile: ./processor/Dockerfile
+    ports:
+      - "7259:7259"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - default
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:latest
+    volumes:
+      - ./volumes/mosquitto:/mosquitto/config
+    ports:
+      - "1883:1883"
+    restart: unless-stopped
+    networks:
+      - default
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: iotvisual
+      MONGO_INITDB_ROOT_PASSWORD: password
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

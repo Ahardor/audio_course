@@ -7,6 +7,7 @@
 	mac-down \
 	purge \
 	mac-purge \
+	test-processor
 
 gen-mock: 
 	mkdir -p mock/internal
@@ -39,3 +40,8 @@ mac-down:
 mac-purge:
 	docker-compose down
 	docker system prune -a
+
+test-processor:
+	sudo docker compose -f docker-mongotest-compose.yaml up --remove-orphans 
+	go test ./processor/...
+	sudo docker compose down --rmi
