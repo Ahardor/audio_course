@@ -14,17 +14,6 @@ services:
     networks:
       - default
 
-  mosquitto:
-    container_name: mosquitto
-    image: eclipse-mosquitto:latest
-    volumes:
-      - ./volumes/mosquitto:/mosquitto/config
-    ports:
-      - "1883:1883"
-    restart: unless-stopped
-    networks:
-      - default
-
   mongo:
     image: mongo
     restart: always

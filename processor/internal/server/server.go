@@ -44,7 +44,8 @@ func WithMQTTClient() Option {
 	return func(s *Server) {
 		client, err := initMQTT()
 		if err != nil {
-			log.Fatal("failed to initialize mqtt: %w", err)
+			log.Printf("failed to initialize mqtt: %w", err)
+			return
 		}
 		s.Mqtt = client
 	}

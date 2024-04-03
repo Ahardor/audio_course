@@ -1,18 +1,23 @@
 package test
 
 import (
+	"context"
 	"iotvisual/processor/internal/queries"
-	"iotvisual/processor/internal/server"
+	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func NewServer() *server.Server {
-	s := server.New(
-		server.WithLogger(),
-		server.WithDatabase(),
-	)
-	return s
+func GetTestCollection() *mongo.Collection {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://mongo"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client.Database("test").Collection("testcollection")
 }
 
 func NewQueries(c *mongo.Collection) *queries.Queries {
