@@ -28,8 +28,21 @@ func (q *Queries) GetMelody(ctx context.Context, melodyName melody.ID) (melody.M
 	return m, nil
 }
 
-// {Key: "sounds", Value: bson.M{
-// "$project": bson.M{
-// 	"$slice": []interface{}{input.Offset, input.Limit},
-// },
-// }},
+func (q *Queries) InsertMelodies(ctx context.Context, input []melody.Melody) error {
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+
+	var mrsh []interface{}
+	for _, v := range input {
+		bytes, err := bson.Marshal(v)
+		if err != nil {
+			return err
+		}
+		mrsh = append(mrsh, bytes)
+	}
+	_, err := q.collection.InsertMany(ctx, mrsh)
+	if err != nil {
+		return err
+	}
+	return nil
+}

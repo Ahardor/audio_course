@@ -7,7 +7,8 @@
 	mac-down \
 	purge \
 	mac-purge \
-	test-processor
+	local-db-up \
+	local-db-down
 
 gen-mock: 
 	mkdir -p mock/internal
@@ -41,7 +42,8 @@ mac-purge:
 	docker-compose down
 	docker system prune -a
 
-test-processor:
-	sudo docker compose -f docker-mongotest-compose.yaml up --remove-orphans 
-	go test ./processor/...
-	sudo docker compose down --rmi
+local-db-up:
+	sudo docker run -d -p 127.0.0.1:27017:27017 --name=mongotest  mongodb/mongodb-community-server
+
+local-db-down:
+	sudo docker stop mongotest && sudo docker rm mongotest
