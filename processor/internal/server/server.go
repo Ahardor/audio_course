@@ -128,7 +128,3 @@ func initMQTT() (*mqtt.Client, error) {
 	}
 	return &client, nil
 }
-
-func initCache() cacher.MelodyCache {
-	return cacher.MelodyCache{}
-}
