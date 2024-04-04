@@ -1,12 +1,11 @@
+include macmake.mk
+
 .PHONY:
 	gen-mock \
 	gen-processor \
 	up \
-	mac-up \
 	down \
-	mac-down \
 	purge \
-	mac-purge \
 	local-db-up \
 	local-db-down
 
@@ -31,19 +30,3 @@ down:
 purge:
 	sudo docker compose down
 	sudo docker system prune -a
-
-mac-up:
-	docker-compose up
-
-mac-down:
-	docker-compose down
-
-mac-purge:
-	docker-compose down
-	docker system prune -a
-
-local-db-up:
-	sudo docker run -d -p 127.0.0.1:27017:27017 --name=mongotest  mongodb/mongodb-community-server
-
-local-db-down:
-	sudo docker stop mongotest && sudo docker rm mongotest

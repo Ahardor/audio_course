@@ -80,7 +80,15 @@ func initLogger(src io.Writer) zerolog.Logger {
 func initDatabase() (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://mongo"))
+	client, err := mongo.Connect(
+		ctx,
+		options.Client().
+			ApplyURI("mongodb://mongo").
+			SetAuth(options.Credential{
+				Username: "iotvisual",
+				Password: "iotvisualpass",
+			}),
+	)
 	if err != nil {
 		return nil, err
 	}
