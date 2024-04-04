@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"iotvisual/processor/internal/cacher"
 	"iotvisual/processor/internal/processor/api/processor_v1"
 	"log"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -21,6 +23,7 @@ type Server struct {
 	Logger zerolog.Logger
 	Mqtt   *mqtt.Client
 	Db     *mongo.Client
+	cache  *cacher.MelodyCache
 	processor_v1.UnimplementedProcessorServiceServer
 }
 
@@ -44,8 +47,7 @@ func WithMQTTClient() Option {
 	return func(s *Server) {
 		client, err := initMQTT()
 		if err != nil {
-			fmt.Println("MQTT FUCKED UP")
-			return
+			log.Fatal("failed to initialize database: %w", err)
 		}
 		s.Mqtt = client
 	}
@@ -58,6 +60,15 @@ func WithDatabase() Option {
 			log.Fatal("failed to initialize database: %w", err)
 		}
 		s.Db = client
+	}
+}
+
+func WithCache() Option {
+	return func(s *Server) {
+		s.cache = cacher.New(
+			cacher.WithExpirationTime(5*time.Minute),
+			cacher.WithCleanupInterval(2*time.Minute),
+		)
 	}
 }
 
@@ -92,6 +103,17 @@ func initDatabase() (*mongo.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	col := client.Database("iotDB").Collection("Melodies")
+	_, err = col.Indexes().CreateOne(
+		ctx,
+		mongo.IndexModel{
+			Keys:    bson.D{{Key: "id", Value: 1}},
+			Options: options.Index().SetUnique(true),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
 	return client, nil
 }
 
@@ -105,4 +127,8 @@ func initMQTT() (*mqtt.Client, error) {
 		return nil, appToken.Error()
 	}
 	return &client, nil
+}
+
+func initCache() cacher.MelodyCache {
+	return cacher.MelodyCache{}
 }

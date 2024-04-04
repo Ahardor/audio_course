@@ -17,6 +17,7 @@ func main() {
 		server.WithLogger(),
 		server.WithDatabase(),
 		server.WithMQTTClient(),
+		server.WithCache(),
 	)
 	defer func() {
 		if err := s.Db.Disconnect(appCtx); err != nil {
