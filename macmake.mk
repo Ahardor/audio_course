@@ -8,7 +8,7 @@ mac-up:
 	docker-compose -f docker-compose.yaml up
 
 mac-down:
-	docker-compose down
+	docker-compose -f docker-compose.yaml down
 
 mac-purge:
 	docker-compose down

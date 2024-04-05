@@ -22,10 +22,10 @@ gen-processor:
 		processor/api/processor_v1/service.proto
 
 up:
-	sudo docker compose up
+	sudo docker -f docker-compose.yaml compose up
 
 down:
-	sudo docker compose down
+	sudo docker compose -f docker-compose.yaml down
 
 purge:
 	sudo docker compose down
