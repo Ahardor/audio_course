@@ -6,6 +6,7 @@ import (
 	"io"
 	"iotvisual/processor/internal/cacher"
 	"iotvisual/processor/internal/processor/api/processor_v1"
+	"iotvisual/processor/internal/server/handlers"
 	"log"
 	"os"
 	"strings"
@@ -21,7 +22,7 @@ import (
 
 type Server struct {
 	Logger zerolog.Logger
-	Mqtt   *mqtt.Client
+	Mqtt   mqtt.Client
 	Db     *mongo.Client
 	cache  *cacher.MelodyCache
 	processor_v1.UnimplementedProcessorServiceServer
@@ -100,6 +101,7 @@ func initDatabase() (*mongo.Client, error) {
 				Password: "iotvisualpass",
 			}),
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -111,20 +113,21 @@ func initDatabase() (*mongo.Client, error) {
 			Options: options.Index().SetUnique(true),
 		},
 	)
+
 	if err != nil {
 		return nil, err
 	}
 	return client, nil
 }
 
-func initMQTT() (*mqtt.Client, error) {
-	client := mqtt.NewClient(
-		mqtt.NewClientOptions().
-			AddBroker("tcp://mosquitto:1883").
-			SetClientID("app_processor"),
-	)
+func initMQTT() (mqtt.Client, error) {
+	opts := mqtt.NewClientOptions().
+		SetDefaultPublishHandler(handlers.MelodyEventHandler()).
+		AddBroker("tcp://mosquitto:1883").
+		SetClientID("app_processor")
+	client := mqtt.NewClient(opts)
 	if appToken := client.Connect(); appToken.Wait() && appToken.Error() != nil {
 		return nil, appToken.Error()
 	}
-	return &client, nil
+	return client, nil
 }

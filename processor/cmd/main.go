@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"iotvisual/processor/internal/processor/api/processor_v1"
 	"iotvisual/processor/internal/server"
+	"iotvisual/processor/internal/server/handlers"
 	"net"
 
 	"google.golang.org/grpc"
@@ -24,6 +25,14 @@ func main() {
 			panic(err)
 		}
 	}()
+
+	subToken := s.Mqtt.Subscribe("iotvisual", 1, handlers.MelodyEventHandler())
+	if ok := subToken.Wait(); !ok || subToken.Error() != nil {
+		s.Logger.Error().
+			Msgf("MQTT processor subscribe error: %s, token received: %t",
+				subToken.Error().Error(), ok,
+			)
+	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 7259))
 	if err != nil {
