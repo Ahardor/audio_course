@@ -1,7 +1,7 @@
 package cacher
 
 import (
-	"iotvisual/processor/domain/melody"
+	"iotvisual/processor/internal/domain/melody"
 	"sync"
 	"time"
 )

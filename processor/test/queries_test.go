@@ -2,9 +2,9 @@ package test
 
 import (
 	"context"
-	"iotvisual/processor/domain/frequency"
-	"iotvisual/processor/domain/melody"
-	"iotvisual/processor/domain/note"
+	"iotvisual/processor/internal/domain/frequency"
+	"iotvisual/processor/internal/domain/melody"
+	"iotvisual/processor/internal/domain/note"
 	"testing"
 
 	"github.com/google/uuid"

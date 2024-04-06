@@ -1,8 +1,8 @@
 package melody
 
 import (
-	"iotvisual/processor/domain/frequency"
-	"iotvisual/processor/domain/note"
+	"iotvisual/processor/internal/domain/frequency"
+	"iotvisual/processor/internal/domain/note"
 )
 
 // ID - уникальный идентификатор мелодии.

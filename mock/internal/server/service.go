@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"iotvisual/mock/internal/domain/messages"
 	"iotvisual/mock/internal/mock/api/mock_v1"
 	"os"
 	"time"
@@ -11,11 +12,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gopkg.in/yaml.v3"
 )
-
-type Note struct {
-	Frequency float64 `yaml:"frequency"`
-	Length    int     `yaml:"length"`
-}
 
 func (s *Server) GetSoundFile(ctx context.Context, request *mock_v1.GetSoundFileRequest) (*emptypb.Empty, error) {
 	if request == nil {
@@ -27,21 +23,21 @@ func (s *Server) GetSoundFile(ctx context.Context, request *mock_v1.GetSoundFile
 		return nil, err
 	}
 
-	var notes []Note
-	if err = yaml.Unmarshal(bytes, &notes); err != nil {
+	var inputs []messages.MessageSoundInput
+	if err = yaml.Unmarshal(bytes, &inputs); err != nil {
 		return nil, err
 	}
 
-	for _, note := range notes {
-		msg, err := json.Marshal(note)
+	for _, input := range inputs {
+		msg, err := json.Marshal(input)
 		if err != nil {
 			s.Logger.Err(err).Msg("Error on json marshall")
 			continue
 		}
-		token := s.MqttClient.Publish("iotvisual", 0, false, msg)
-		s.Logger.Info().Msgf("Sending result: %t, with error: %v", token.Wait(), token.Error())
-		time.Sleep(time.Duration(note.Length) * time.Second)
+		token := s.MqttClient.Publish("sound/note", 0, false, msg)
+		s.Logger.Debug().Msgf("Sending result: %t, with error: %v", token.Wait(), token.Error())
+		time.Sleep(time.Duration(input.LengthMS) * time.Millisecond)
 	}
 
-	return nil, nil
+	return &emptypb.Empty{}, nil
 }

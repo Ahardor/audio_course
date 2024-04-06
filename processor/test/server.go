@@ -2,7 +2,7 @@ package test
 
 import (
 	"context"
-	"iotvisual/processor/internal/queries"
+	"iotvisual/processor/internal/pkg/queries"
 	"log"
 	"time"
 
@@ -16,7 +16,6 @@ func GetTestCollection() *mongo.Collection {
 	client, err := mongo.Connect(
 		ctx,
 		options.Client().
-			//ApplyURI("mongodb://localhost:27017").
 			SetAuth(options.Credential{
 				Username: "iot",
 				Password: "iotpass",

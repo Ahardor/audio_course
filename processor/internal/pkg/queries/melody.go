@@ -3,7 +3,7 @@ package queries
 import (
 	"context"
 	"fmt"
-	"iotvisual/processor/domain/melody"
+	"iotvisual/processor/internal/domain/melody"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
