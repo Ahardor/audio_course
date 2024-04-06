@@ -16,16 +16,19 @@ func GetTestCollection() *mongo.Collection {
 	client, err := mongo.Connect(
 		ctx,
 		options.Client().
-			ApplyURI("mongodb://localhost:27017").
+			//ApplyURI("mongodb://localhost:27017").
 			SetAuth(options.Credential{
-				Username: "iotvisual",
-				Password: "iotvisualpass",
-			}),
+				Username: "iot",
+				Password: "iotpass",
+			}).
+			ApplyURI("mongodb://mongo:27017"),
 	)
+	log.Println("Connection to database: ")
+	log.Println("Error: ", err)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return client.Database("test").Collection("testcollection")
+	return client.Database("iot").Collection("testcollection")
 }
 
 func NewQueries(c *mongo.Collection) *queries.Queries {

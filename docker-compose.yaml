@@ -77,8 +77,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: iotvisual
-      MONGO_INITDB_ROOT_PASSWORD: iotvisualpass
+      MONGO_INITDB_ROOT_USERNAME: iot
+      MONGO_INITDB_ROOT_PASSWORD: iotpass
     healthcheck:
       test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s

@@ -90,22 +90,21 @@ func initLogger(src io.Writer) zerolog.Logger {
 }
 
 func initDatabase() (*mongo.Client, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(
 		ctx,
 		options.Client().
-			ApplyURI("mongodb://mongo").
 			SetAuth(options.Credential{
-				Username: "iotvisual",
-				Password: "iotvisualpass",
-			}),
+				Username: "iot",
+				Password: "iotpass",
+			}).
+			ApplyURI("mongodb://mongo"),
 	)
-
 	if err != nil {
 		return nil, err
 	}
-	col := client.Database("iotDB").Collection("Melodies")
+	col := client.Database("iot").Collection("melodies")
 	_, err = col.Indexes().CreateOne(
 		ctx,
 		mongo.IndexModel{

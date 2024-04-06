@@ -1,6 +1,8 @@
 FROM golang:alpine AS builder
 WORKDIR /app
-COPY . ./
+COPY go.mod ./
+COPY go.sum ./
+COPY ./processor ./processor
 RUN go build -o app processor/cmd/main.go
 FROM alpine
 WORKDIR /app
