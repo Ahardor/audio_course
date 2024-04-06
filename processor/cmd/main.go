@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"iotvisual/processor/internal/processor/api/processor_v1"
 	"iotvisual/processor/internal/server"
-	"iotvisual/processor/internal/server/handlers"
 	"net"
 
 	"google.golang.org/grpc"
@@ -15,7 +14,7 @@ import (
 func main() {
 	appCtx := context.Background()
 	s := server.New(
-		server.WithLogger(),
+		appCtx,
 		server.WithDatabase(),
 		server.WithMQTTClient(),
 		server.WithCache(),
@@ -26,7 +25,7 @@ func main() {
 		}
 	}()
 
-	subToken := s.Mqtt.Subscribe("iotvisual", 1, handlers.MelodyEventHandler())
+	subToken := s.Mqtt.Subscribe("sound/note", 1, s.MelodyEventHandler(appCtx))
 	if ok := subToken.Wait(); !ok || subToken.Error() != nil {
 		s.Logger.Error().
 			Msgf("MQTT processor subscribe error: %s, token received: %t",

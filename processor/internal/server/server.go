@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 	"iotvisual/processor/internal/pkg/cacher"
+	"iotvisual/processor/internal/pkg/queries"
 	"iotvisual/processor/internal/processor/api/processor_v1"
-	"iotvisual/processor/internal/server/handlers"
 	"log"
 	"os"
 	"strings"
@@ -21,27 +21,24 @@ import (
 )
 
 type Server struct {
-	Logger zerolog.Logger
-	Mqtt   mqtt.Client
-	Db     *mongo.Client
-	cache  *cacher.MelodyCache
+	Logger  zerolog.Logger
+	Mqtt    mqtt.Client
+	Db      *mongo.Client
+	Queries *queries.Queries
+	cache   *cacher.MelodyCache
 	processor_v1.UnimplementedProcessorServiceServer
 }
 
 type Option func(s *Server)
 
-func New(opts ...Option) *Server {
+func New(ctx context.Context, opts ...Option) *Server {
 	s := &Server{}
-
+	s.Logger = initLogger(ctx, os.Stdout)
 	for i := range opts {
 		opts[i](s)
 	}
 
 	return s
-}
-
-func WithLogger() Option {
-	return func(s *Server) { s.Logger = initLogger(os.Stdout) }
 }
 
 func WithMQTTClient() Option {
@@ -61,6 +58,7 @@ func WithDatabase() Option {
 			log.Fatal("failed to initialize database: %w", err)
 		}
 		s.Db = client
+		s.Queries = queries.New(client.Database("iot").Collection("melodies"))
 	}
 }
 
@@ -73,7 +71,7 @@ func WithCache() Option {
 	}
 }
 
-func initLogger(src io.Writer) zerolog.Logger {
+func initLogger(ctx context.Context, src io.Writer) zerolog.Logger {
 	logger := zerolog.New(zerolog.ConsoleWriter{
 		Out:        src,
 		NoColor:    false,
@@ -85,7 +83,8 @@ func initLogger(src io.Writer) zerolog.Logger {
 			t, _ := time.Parse(time.RFC3339, fmt.Sprintf("%s", i))
 			return t.Format(time.RFC1123)
 		},
-	}).With().Timestamp().Logger().Level(zerolog.DebugLevel)
+	}).With().Ctx(ctx).Timestamp().Str("application", "processor").
+		Logger().Level(zerolog.DebugLevel)
 	return logger
 }
 
@@ -121,7 +120,6 @@ func initDatabase() (*mongo.Client, error) {
 
 func initMQTT() (mqtt.Client, error) {
 	opts := mqtt.NewClientOptions().
-		SetDefaultPublishHandler(handlers.MelodyEventHandler()).
 		AddBroker("tcp://mosquitto:1883").
 		SetClientID("app_processor")
 	client := mqtt.NewClient(opts)

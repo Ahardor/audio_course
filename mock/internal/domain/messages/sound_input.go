@@ -11,6 +11,8 @@ type MessageSoundInput struct {
 	Device device.ID `yaml:"device"`
 	// ID сессии.
 	SessionUUID session.UUID `yaml:"session_uuid"`
+	// Название мелодии.
+	Melody string `yaml:"melody"`
 	// Частота звука.
 	Frequency float64 `yaml:"frequency"`
 	// Длительность в миллисекундах.

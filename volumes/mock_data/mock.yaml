@@ -1,48 +1,60 @@
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 130.81
   length_ms: 2000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 220.17
   length_ms: 3000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 110.20
   length_ms: 1000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 890.11
   length_ms: 2000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 2355.82
   length_ms: 3000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 8592.92
   length_ms: 2000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 430.21
   length_ms: 2000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 7412.28
   length_ms: 3000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 130.81
   length_ms: 1000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 2355.82
   length_ms: 2000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 8592.92
   length_ms: 4000
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
+  melody: "Some Random Melody"
   frequency: 6117.51
   length_ms: 2000
