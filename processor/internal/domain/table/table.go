@@ -1,8 +1,8 @@
 package table
 
 import (
-	"iotvisual/processor/domain/frequency"
-	"iotvisual/processor/domain/note"
+	"iotvisual/processor/internal/domain/frequency"
+	"iotvisual/processor/internal/domain/note"
 )
 
 // noteFrequencies - соответствие ноты и списка частот по октавам.

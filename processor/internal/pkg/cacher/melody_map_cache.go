@@ -54,6 +54,17 @@ func (c *MelodyCache) Load(key melody.ID) (melody.Melody, bool) {
 	return item.melody, true
 }
 
+func (c *MelodyCache) LoadNthNote(key melody.ID, n int) (melody.Sound, NoteLoadStatus) {
+	m, ok := c.Load(key)
+	if !ok {
+		return melody.Sound{}, NoteLoadStatusMelodyDoesNotExist
+	}
+	if n >= len(m.Sounds) || n < 0 {
+		return melody.Sound{}, NoteLoadStatusNoteIndexOutOfRange
+	}
+	return m.Sounds[n], NoteLoadStatusOK
+}
+
 func (c *MelodyCache) Store(key melody.ID, value melody.Melody) {
 	now := time.Now()
 	item := melodyItem{
