@@ -47,14 +47,23 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 		note := s.noteTable.FindNote(input.Frequency)
 		// TODO: добавить погрешность к длительности ноты.
 		// Поправить фактическую длительность нот (см. беседу проекта в ТГ).
-		_ = messages.MessageSoundOutput{
+		output := messages.MessageSoundOutput{
 			Device:           input.Device,
 			Melody:           input.Melody,
 			SessionUUID:      input.SessionUUID,
-			ExpectedNote:     sound.Note.String(),
-			ActualNote:       note.String(),
+			ExpectedNote:     sound.Note.GetNote(),
+			ActualNote:       note.GetNote(),
 			ExpectedLengthMS: sound.DurationMS,
 			ActualLengthMS:   input.LengthMS,
 		}
+
+		bytes, err := json.Marshal(output)
+		if err != nil {
+			s.Logger.Err(err).Stack().Ctx(ctx).Msgf("JSON marshal output: ")
+			return
+		}
+
+		token := c.Publish("sound/note/record", 0, false, bytes)
+		s.Logger.Debug().Msgf("Sending processed note to RT-database: %t, with error: %v", token.Wait(), token.Error())
 	}
 }

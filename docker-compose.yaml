@@ -79,12 +79,13 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: iot
       MONGO_INITDB_ROOT_PASSWORD: iotpass
+    command: mongod --quiet --logpath /dev/null 
     healthcheck:
       test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 5s
+      retries: 3
+      start_period: 1s
     networks:
       - default
 

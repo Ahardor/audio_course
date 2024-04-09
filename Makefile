@@ -22,7 +22,7 @@ gen-processor:
 		processor/api/processor_v1/service.proto
 
 up:
-	sudo docker -f docker-compose.yaml compose up
+	sudo docker compose -f docker-compose.yaml up --build
 
 down:
 	sudo docker compose -f docker-compose.yaml down

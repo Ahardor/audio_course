@@ -43,7 +43,7 @@ func (n Note) String() string {
 }
 
 // GetNote возвращает ноту с учетом нот с одинаковым набором частот.
-func GetNote(n Note) string {
+func (n Note) GetNote() string {
 	switch n {
 	case NoteCd, NoteDb:
 		return fmt.Sprintf("%s/%s", NoteCd.String(), NoteDb.String())
