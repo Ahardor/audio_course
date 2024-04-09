@@ -2,13 +2,15 @@ import pyaudio
 import wave
 import time
 import keyboard
+# import librosa
 import numpy as np
-import matplotlib.pyplot as plt
+import scipy
+# from sound_to_midi.monophonic import wave_to_midi
 
 CHUNK = 1024
-FORMAT = pyaudio.paInt16
+FORMAT = pyaudio.paFloat32
 CHANNELS = 2
-RATE = 44100
+RATE = 48000
 RECORD_SECONDS = 5
 WAVE_OUTPUT_FILENAME = "output.wav"
 
@@ -31,7 +33,7 @@ def main():
     input_device = int(input("Enter input device id: "))
 
     stream = p.open(format=FORMAT,
-                    channels=CHANNELS,
+                    channels=1,
                     rate=RATE,
                     input=True,
                     frames_per_buffer=CHUNK,
@@ -43,14 +45,30 @@ def main():
 
     print("* recording")
 
-    result = np.array([], dtype=np.int16)
-    
     while True:
         data = stream.read(CHUNK)
         frames.append(data)
-        newdata = np.fromstring(data, dtype=np.int16)
-        result = np.append(result, newdata)
-        
+
+        peakfreq=0.0
+        if(stream):
+            tdarray=np.frombuffer(data, dtype=np.float32)
+
+            fftarray=np.fft.fft(tdarray)
+
+            nyquist=.5*RATE
+
+            denom,numer=scipy.signal.butter(5,[4/nyquist, 10000/nyquist],btype="band")  
+            ffftarray=scipy.signal.lfilter(denom,numer,fftarray)
+
+            freqarray=np.fft.fftfreq(tdarray.size)
+
+            ind=np.argmax(np.abs(ffftarray)**2)
+
+            peakfreq=np.abs(freqarray[ind])*RATE
+            
+            frequency=peakfreq
+
+            print(frequency)
 
         if keyboard.is_pressed('q'):
             print("* done recording")
@@ -67,6 +85,14 @@ def main():
             wf.close()
 
             
+            # x = np.frombuffer(b''.join(frames), dtype=np.int16)
+            # test = librosa.feature.mfcc(y=x.astype(np.float16), sr=RATE, )
+            # midi = wave_to_midi(audio_signal=test.astype(np.float16), srate=RATE, frame_length=CHUNK)
+        
+            # print(test.astype(np.float32))
+            
+            # with open ("output.mid", 'wb') as f:
+            #     midi.writeFile(f)
 
             break
 
