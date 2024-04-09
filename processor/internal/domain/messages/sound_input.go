@@ -8,13 +8,15 @@ import (
 // MessageSoundInput событие получение звука из датчика.
 type MessageSoundInput struct {
 	// ID устройства (датчика).
-	Device device.ID `yaml:"device"`
+	Device device.ID `json:"device"`
 	// ID сессии.
-	SessionUUID session.UUID `yaml:"session_uuid"`
+	SessionUUID session.UUID `json:"session_uuid"`
 	// Название мелодии.
-	Melody string `yaml:"melody"`
+	Melody string `json:"melody"`
 	// Частота звука.
-	Frequency float64 `yaml:"frequency"`
+	Frequency float64 `json:"frequency"`
 	// Длительность в миллисекундах.
-	LengthMS int64 `yaml:"length_ms"`
+	LengthMS int64 `json:"length_ms"`
+	// Порядковый номер в мелодии.
+	SerialNumber int `json:"serial_number"`
 }

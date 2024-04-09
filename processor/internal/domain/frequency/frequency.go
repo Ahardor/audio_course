@@ -4,7 +4,8 @@ import "math"
 
 const (
 	// FrequencyBaseUnit описывает базовые единицы (base points) представления частоты.
-	// В 1 Hz содержится FrequencyBaseUnit базовых единиц.
+	// В 1 Hz содержитс 100 FrequencyBaseUnit базовых единиц.
+	// По сути, сводит работу с герцами к работе с сантигерцами (1 Hz * 10^-2).
 	// Для работы с частотами подразумевается округление частоты до 2 знаков после запятой.
 	// Data source: https://mixbutton.com/mixing-articles/music-note-to-frequency-chart/.
 	FrequencyBaseUnit = 100

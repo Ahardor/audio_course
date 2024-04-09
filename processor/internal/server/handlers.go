@@ -23,10 +23,7 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 			return
 		}
 
-		// TODO: написать обработку индексов нот.
-		// Можно передавать с сообщением, можно создать мапу, в которой хранить:
-		// Key: device, Value: {Melody, Session, Index}.
-		sound, status := s.cache.LoadNthNote(melody.ID(input.Melody), 0)
+		sound, status := s.cache.LoadNthNote(melody.ID(input.Melody), input.SerialNumber)
 		switch status {
 		case cacher.NoteLoadStatusMelodyDoesNotExist:
 			m, err := s.Queries.GetMelody(ctx, melody.ID(input.Melody))
@@ -34,13 +31,30 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 				s.Logger.Err(err).Stack().Ctx(ctx).Msgf("queries GetMelody: ")
 				return
 			}
-			s.cache.Store(m.ID, m)
-			// If index out of range : fallthrough ???
+			if len(m.Sounds) > input.SerialNumber {
+				s.cache.Store(m.ID, m)
+				sound = m.Sounds[input.SerialNumber]
+				break
+			}
+			fallthrough
 		case cacher.NoteLoadStatusNoteIndexOutOfRange:
 			s.Logger.Warn().Stack().Ctx(ctx).Msg("Note index out of bounds, recording aborted")
 			return
 		case cacher.NoteLoadStatusOK:
 			break
+		}
+
+		note := s.noteTable.FindNote(input.Frequency)
+		// TODO: добавить погрешность к длительности ноты.
+		// Поправить фактическую длительность нот (см. беседу проекта в ТГ).
+		_ = messages.MessageSoundOutput{
+			Device:           input.Device,
+			Melody:           input.Melody,
+			SessionUUID:      input.SessionUUID,
+			ExpectedNote:     sound.Note.String(),
+			ActualNote:       note.String(),
+			ExpectedLengthMS: sound.DurationMS,
+			ActualLengthMS:   input.LengthMS,
 		}
 	}
 }

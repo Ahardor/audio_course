@@ -19,5 +19,5 @@ type Sound struct {
 	Note       note.Note        `bson:"note"`     // Нота.
 	Octave     frequency.Octave `bson:"octave"`   // Октава.
 	Serial     int              `bson:"serial"`   // Порядковый номер.
-	DurationMS int              `bson:"duration"` // Длительность в мс.
+	DurationMS int64            `bson:"duration"` // Длительность в мс.
 }

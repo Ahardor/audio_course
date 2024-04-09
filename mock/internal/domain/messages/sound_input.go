@@ -17,4 +17,6 @@ type MessageSoundInput struct {
 	Frequency float64 `yaml:"frequency"`
 	// Длительность в миллисекундах.
 	LengthMS int64 `yaml:"length_ms"`
+	// Порядковый номер в мелодии.
+	SerialNumber int `yaml:"serial_number"`
 }

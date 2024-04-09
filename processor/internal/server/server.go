@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"iotvisual/processor/internal/domain/table"
 	"iotvisual/processor/internal/pkg/cacher"
 	"iotvisual/processor/internal/pkg/queries"
 	"iotvisual/processor/internal/processor/api/processor_v1"
@@ -21,11 +22,12 @@ import (
 )
 
 type Server struct {
-	Logger  zerolog.Logger
-	Mqtt    mqtt.Client
-	Db      *mongo.Client
-	Queries *queries.Queries
-	cache   *cacher.MelodyCache
+	Logger    zerolog.Logger
+	Mqtt      mqtt.Client
+	Db        *mongo.Client
+	Queries   *queries.Queries
+	cache     *cacher.MelodyCache
+	noteTable table.NoteTable
 	processor_v1.UnimplementedProcessorServiceServer
 }
 
@@ -69,6 +71,10 @@ func WithCache() Option {
 			cacher.WithCleanupInterval(2*time.Minute),
 		)
 	}
+}
+
+func WithNoteTable() Option {
+	return func(s *Server) { s.noteTable = table.InitTable() }
 }
 
 func initLogger(ctx context.Context, src io.Writer) zerolog.Logger {
