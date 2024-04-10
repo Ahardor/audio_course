@@ -62,7 +62,7 @@ func InitTable() NoteTable {
 	}
 
 	for oct := 0; oct < frequency.OctavesCount; oct++ {
-		nt.deltas[oct] = int(nt.notes[0].Frequencies[oct]-nt.notes[1].Frequencies[oct])/2 - 1
+		nt.deltas[oct] = int(nt.notes[1].Frequencies[oct]-nt.notes[0].Frequencies[oct])/2 - 1
 	}
 	return nt
 }
@@ -75,9 +75,14 @@ func (nt NoteTable) FindNote(freq float64) note.Note {
 			if frequency.IsApproximatelyEqual(f, noteEntry.Frequencies[column], nt.deltas[column]) {
 				return noteEntry.Note
 			}
-			if row < len(nt.notes)-1 &&
-				f < (nt.notes[row+1].Frequencies[column]-frequency.Frequency(nt.deltas[column])) {
+			if row >= len(nt.notes)-1 {
+				continue
+			}
+			// Микрооптимизация - пропускаем ненужные сравнения, если уверены, что точно не попадаем в следующую ноту в таблице.
+			if f < (nt.notes[row+1].Frequencies[column] - frequency.Frequency(nt.deltas[column])) {
 				return note.NoteUnknown
+			} else if f > (nt.notes[row+1].Frequencies[column] + frequency.Frequency(nt.deltas[column])) {
+				continue
 			}
 		}
 	}

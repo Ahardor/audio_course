@@ -62,7 +62,7 @@ func WithDatabase() Option {
 		s.Db = client
 		s.Queries = queries.New(client.Database("iot").Collection("melodies"))
 		if err := s.Queries.SeedDatabase(); err != nil {
-			fmt.Println("SEED НЕ СРАБОТАЛ")
+			log.Println("Database seed error: ", err)
 			return
 		}
 	}

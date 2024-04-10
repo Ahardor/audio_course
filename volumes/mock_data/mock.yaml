@@ -7,7 +7,7 @@
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
   melody: "Master of Puppets"
-  frequency: 220.17
+  frequency: 16.35
   length_ms: 3000
   serial_number: 2
 - device: device1
@@ -25,7 +25,7 @@
 - device: device1
   session_uuid: A25DA53D-7CC2-4F63-AE9C-0D0B268B751F
   melody: "Master of Puppets"
-  frequency: 2355.82
+  frequency: 698.46
   length_ms: 3000
   serial_number: 5
 - device: device1

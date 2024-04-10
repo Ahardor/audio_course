@@ -1,6 +1,8 @@
 package frequency
 
-import "math"
+import (
+	"math"
+)
 
 const (
 	// FrequencyBaseUnit описывает базовые единицы (base points) представления частоты.
