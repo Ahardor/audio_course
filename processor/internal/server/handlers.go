@@ -65,5 +65,6 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 
 		token := c.Publish("sound/note/record", 0, false, bytes)
 		s.Logger.Debug().Msgf("Sending processed note to RT-database: %t, with error: %v", token.Wait(), token.Error())
+		s.Logger.Debug().Msgf("Sent message: %s", output.String())
 	}
 }

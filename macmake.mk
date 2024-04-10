@@ -5,7 +5,7 @@
 	mac-test-processor
 
 mac-up:
-	docker-compose -f docker-compose.yaml up
+	docker-compose -f docker-compose.yaml up --build
 
 mac-down:
 	docker-compose -f docker-compose.yaml down

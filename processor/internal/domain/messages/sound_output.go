@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"fmt"
 	"iotvisual/processor/internal/domain/device"
 	"iotvisual/processor/internal/domain/session"
 )
@@ -21,4 +22,12 @@ type MessageSoundOutput struct {
 	ExpectedLengthMS int64 `json:"expected_length_ms"`
 	// Фактическая длительность в миллисекундах.
 	ActualLengthMS int64 `json:"actual_length_ms"`
+}
+
+// String реализация интерфейса Stringer.
+func (m MessageSoundOutput) String() string {
+	s := fmt.Sprintf("\nDevice: %v\nSessionUUID: %v\nMelody: %v\n\tExpectedNote: %v\n\tActualNote: %v\n\tExpectedDuration: %v\n\tActualDuration: %v\n",
+		m.Device, m.SessionUUID, m.Melody, m.ExpectedNote, m.ActualNote, m.ExpectedLengthMS, m.ActualLengthMS,
+	)
+	return s
 }
