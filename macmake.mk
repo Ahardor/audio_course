@@ -1,16 +1,16 @@
 .PHONY:	
-	mac-up \
-	mac-down \
-	mac-purge \
+	macup \
+	macdown \
+	macpurge \
 	mac-test-processor
 
-mac-up:
+macup:
 	docker-compose -f docker-compose.yaml up --build
 
-mac-down:
+macdown:
 	docker-compose -f docker-compose.yaml down
 
-mac-purge:
+macpurge:
 	docker-compose down
 	docker system prune -a
 
