@@ -22,6 +22,8 @@ gen-processor:
 		processor/api/processor_v1/service.proto
 
 up:
+	sudo chmod +x ./grafana_permissions.sh
+	sudo ./grafana_permissions.sh
 	sudo docker compose -f docker-compose.yaml up --build
 
 down:

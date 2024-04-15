@@ -66,6 +66,12 @@ services:
         DOCKER_INFLUXDB_INIT_BUCKET: iot_visual
         DOCKER_INFLUXDB_INIT_RETENTION: 1w
         DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: mytoken
+    healthcheck:
+      test: ["CMD","influx", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+      start_period: 1s
     ports:
       - "8086:8086"
     networks:
@@ -86,6 +92,25 @@ services:
       timeout: 5s
       retries: 3
       start_period: 1s
+    networks:
+      - default
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./volumes/grafana/provision:/usr/share/grafana/conf/provisioning/datasources
+      - ./volumes/grafana/provision:/etc/grafana/provisioning/datasources
+    depends_on:
+      - influxdb
+    environment:
+      GF_SECURITY_ADMIN_USER: iotvisual
+      GF_SECURITY_ADMIN_PASSWORD: f8dec042
+    user:
+      "1000"
     networks:
       - default
 
