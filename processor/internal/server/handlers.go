@@ -48,13 +48,13 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 		// TODO: добавить погрешность к длительности ноты.
 		// Поправить фактическую длительность нот (см. беседу проекта в ТГ).
 		output := messages.MessageSoundOutput{
-			Device:           input.Device,
-			Melody:           input.Melody,
-			SessionUUID:      input.SessionUUID,
-			ExpectedNote:     sound.Note.GetNote(),
-			ActualNote:       note.GetNote(),
-			ExpectedLengthMS: sound.DurationMS,
-			ActualLengthMS:   input.LengthMS,
+			Device:                input.Device,
+			Melody:                input.Melody,
+			SessionUUID:           input.SessionUUID,
+			ExpectedNote:          sound.Note.GetNote(),
+			ActualNote:            note.GetNote(),
+			ExpectedLengthSeconds: float64(sound.DurationMS) / 1000,
+			ActualLengthSeconds:   float64(input.LengthMS) / 1000,
 		}
 
 		bytes, err := json.Marshal(output)

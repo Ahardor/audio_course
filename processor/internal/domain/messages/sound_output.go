@@ -18,16 +18,16 @@ type MessageSoundOutput struct {
 	ExpectedNote string `json:"expected_note"`
 	// Фактическая нота.
 	ActualNote string `json:"actual_note"`
-	// Ожидаемая длительность в миллисекундах.
-	ExpectedLengthMS int64 `json:"expected_length_ms"`
-	// Фактическая длительность в миллисекундах.
-	ActualLengthMS int64 `json:"actual_length_ms"`
+	// Ожидаемая длительность в секундах.
+	ExpectedLengthSeconds float64 `json:"expected_length_seconds"`
+	// Фактическая длительность в секундах.
+	ActualLengthSeconds float64 `json:"actual_length_seconds"`
 }
 
 // String реализация интерфейса Stringer.
 func (m MessageSoundOutput) String() string {
 	s := fmt.Sprintf("\nDevice: %v\nSessionUUID: %v\nMelody: %v\n\tExpectedNote: %v\n\tActualNote: %v\n\tExpectedDuration: %v\n\tActualDuration: %v\n",
-		m.Device, m.SessionUUID, m.Melody, m.ExpectedNote, m.ActualNote, m.ExpectedLengthMS, m.ActualLengthMS,
+		m.Device, m.SessionUUID, m.Melody, m.ExpectedNote, m.ActualNote, m.ExpectedLengthSeconds, m.ActualLengthSeconds,
 	)
 	return s
 }
