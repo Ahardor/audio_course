@@ -16,6 +16,10 @@ type MessageSoundOutput struct {
 	Melody string `json:"melody"`
 	// Ожидаемая нота.
 	ExpectedNote string `json:"expected_note"`
+	// Ожидаемая частота.
+	ExpectedFrequency float64 `json:"expected_frequency"`
+	// Фактическая частота.
+	ActualFrequency float64 `json:"actual_frequency"`
 	// Фактическая нота.
 	ActualNote string `json:"actual_note"`
 	// Ожидаемая длительность в секундах.

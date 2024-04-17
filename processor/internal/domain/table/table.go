@@ -88,3 +88,12 @@ func (nt NoteTable) FindNote(freq float64) note.Note {
 	}
 	return note.NoteUnknown
 }
+
+func (nt NoteTable) GetFrequency(note note.Note, octave frequency.Octave) frequency.Frequency {
+	for _, v := range nt.notes {
+		if v.Note == note {
+			return v.Frequencies[octave]
+		}
+	}
+	return 0
+}

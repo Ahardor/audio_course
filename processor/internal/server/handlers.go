@@ -55,6 +55,8 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 			ActualNote:            note.GetNote(),
 			ExpectedLengthSeconds: float64(sound.DurationMS) / 1000,
 			ActualLengthSeconds:   float64(input.LengthMS) / 1000,
+			ExpectedFrequency:     float64(s.noteTable.GetFrequency(note, sound.Octave)) / 100,
+			ActualFrequency:       input.Frequency,
 		}
 
 		bytes, err := json.Marshal(output)
