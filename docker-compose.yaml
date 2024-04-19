@@ -51,6 +51,7 @@ services:
       - ./volumes/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
     depends_on:
       - influxdb
+      - questdb
     restart: unless-stopped
     networks:
       - default
@@ -74,6 +75,19 @@ services:
       start_period: 1s
     ports:
       - "8086:8086"
+    networks:
+      - default
+
+  questdb:
+    container_name: questdb
+    image: questdb/questdb:latest
+    environment:
+      - QDB_PG_READONLY_USER_ENABLED=true
+    ports:
+      - "9000:9000"
+      - "9009:9009"
+      - "9003:9003"
+      - "8812:8812"
     networks:
       - default
     

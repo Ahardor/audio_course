@@ -8,7 +8,7 @@ datasources:
     user: iotvisual
     password: f8dec042
     editable: true
-    isDefault: true
+    isDefault: false
     jsonData:
       version: Flux
       organization: mai
