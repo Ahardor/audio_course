@@ -31,54 +31,27 @@ type Server struct {
 	processor_v1.UnimplementedProcessorServiceServer
 }
 
-type Option func(s *Server)
-
-func New(ctx context.Context, opts ...Option) *Server {
+func New(ctx context.Context) *Server {
 	s := &Server{}
 	s.Logger = initLogger(ctx, os.Stdout)
-	for i := range opts {
-		opts[i](s)
+
+	db, err := initDatabase()
+	if err != nil {
+		panic(err.Error())
+	}
+	s.Db = db
+	s.Queries = queries.New(s.Db.Database("iot").Collection("melodies"))
+	if err := s.Queries.SeedDatabase(); err != nil {
+		log.Println("Database seed error: ", err)
+		panic(err.Error())
 	}
 
+	broker, err := initMQTT()
+	if err != nil {
+		panic(err.Error())
+	}
+	s.Mqtt = broker
 	return s
-}
-
-func WithMQTTClient() Option {
-	return func(s *Server) {
-		client, err := initMQTT()
-		if err != nil {
-			log.Fatal("failed to initialize database: %w", err)
-		}
-		s.Mqtt = client
-	}
-}
-
-func WithDatabase() Option {
-	return func(s *Server) {
-		client, err := initDatabase()
-		if err != nil {
-			log.Fatal("failed to initialize database: %w", err)
-		}
-		s.Db = client
-		s.Queries = queries.New(client.Database("iot").Collection("melodies"))
-		if err := s.Queries.SeedDatabase(); err != nil {
-			log.Println("Database seed error: ", err)
-			return
-		}
-	}
-}
-
-func WithCache() Option {
-	return func(s *Server) {
-		s.cache = cacher.New(
-			cacher.WithExpirationTime(5*time.Minute),
-			cacher.WithCleanupInterval(2*time.Minute),
-		)
-	}
-}
-
-func WithNoteTable() Option {
-	return func(s *Server) { s.noteTable = table.InitTable() }
 }
 
 func initLogger(ctx context.Context, src io.Writer) zerolog.Logger {

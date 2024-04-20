@@ -10,7 +10,7 @@ service ProcessorService {
 
 message GetMockTemplateRequest {
     message Partition {
-        int32 sequential_number = 1;
+    	int32 sequential_number = 1;
         Note note = 2;
         int32 milliseconds = 3;
     }

@@ -13,13 +13,7 @@ import (
 
 func main() {
 	appCtx := context.Background()
-	s := server.New(
-		appCtx,
-		server.WithDatabase(),
-		server.WithMQTTClient(),
-		server.WithCache(),
-		server.WithNoteTable(),
-	)
+	s := server.New(appCtx)
 	defer func() {
 		if err := s.Db.Disconnect(appCtx); err != nil {
 			panic(err)
@@ -29,8 +23,8 @@ func main() {
 	subToken := s.Mqtt.Subscribe("sound/note", 1, s.MelodyEventHandler(appCtx))
 	if ok := subToken.Wait(); !ok || subToken.Error() != nil {
 		s.Logger.Error().
-			Msgf("MQTT processor subscribe error: %s, token received: %t",
-				subToken.Error().Error(), ok,
+			Msgf("MQTT processor subscribe error: %v, token received: %t",
+				subToken.Error(), ok,
 			)
 	}
 
