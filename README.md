@@ -4,4 +4,4 @@
 + `sound/file` (?? in case we receive different input from an actual guitar, e.g. WAV-file units etc.);
 
 ## System Design:
-![System design](./System.png "System design") 
+![System design](./Diagram.png "System design") 

@@ -1,20 +1,20 @@
 .PHONY:	
-	macup \
-	macdown \
-	macpurge \
-	mac-test-processor
+	mup \
+	mdown \
+	mpurge \
+	mtest-processor
 
-macup:
+mup:
 	docker-compose -f docker-compose.yaml up --build
 
-macdown:
+mdown:
 	docker-compose -f docker-compose.yaml down
 
-macpurge:
+mpurge:
 	docker-compose down
 	docker system prune -a
 
-mac-test-processor:
+mtest-processor:
 	docker run -d -p 127.0.0.1:27017:27017 --name=mongotest \
 		-e MONGO_INITDB_ROOT_USERNAME=iotvisual \
    		-e MONGO_INITDB_ROOT_PASSWORD=iotvisualpass \

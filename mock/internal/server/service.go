@@ -34,7 +34,7 @@ func (s *Server) GetSoundFile(ctx context.Context, request *mock_v1.GetSoundFile
 			s.Logger.Err(err).Msg("Error on json marshall")
 			continue
 		}
-		token := s.MqttClient.Publish("sound/note", 0, false, msg)
+		token := s.MqttClient.Publish("sound/note", 1, false, msg)
 		s.Logger.Debug().Msgf("Sending result: %t, with error: %v", token.Wait(), token.Error())
 		time.Sleep(time.Duration(input.LengthMS) * time.Millisecond)
 	}

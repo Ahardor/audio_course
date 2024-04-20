@@ -45,8 +45,7 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 		}
 
 		note := s.noteTable.FindNote(input.Frequency)
-		// TODO: добавить погрешность к длительности ноты.
-		// Поправить фактическую длительность нот (см. беседу проекта в ТГ).
+
 		output := messages.MessageSoundOutput{
 			Device:                input.Device,
 			Melody:                input.Melody,
