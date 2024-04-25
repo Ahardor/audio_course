@@ -18,6 +18,7 @@ func (s *Server) GetSoundFile(ctx context.Context, request *mock_v1.GetSoundFile
 		return nil, fmt.Errorf("no message in request: GetSoundFile")
 	}
 
+	fmt.Println(request.GetFilePath())
 	bytes, err := os.ReadFile(request.GetFilePath())
 	if err != nil {
 		return nil, err

@@ -51,6 +51,11 @@ func New(ctx context.Context) *Server {
 		panic(err.Error())
 	}
 	s.Mqtt = broker
+
+	s.cache = cacher.New(
+		cacher.WithExpirationTime(10*time.Minute),
+		cacher.WithCleanupInterval(15*time.Minute),
+	)
 	return s
 }
 
