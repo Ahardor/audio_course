@@ -118,6 +118,7 @@ services:
     volumes:
       - ./volumes/grafana/provision/datasources:/etc/grafana/provisioning/datasources
       - ./volumes/grafana/provision/dashboards:/etc/grafana/provisioning/dashboards
+      - ./volumes/grafana/ini/grafana.ini:/etc/grafana/grafana.ini
     depends_on:
       - influxdb
       - questdb
