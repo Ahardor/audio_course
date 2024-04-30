@@ -116,10 +116,11 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./volumes/grafana/provision:/usr/share/grafana/conf/provisioning/datasources
-      - ./volumes/grafana/provision:/etc/grafana/provisioning/datasources
+      - ./volumes/grafana/provision/datasources:/etc/grafana/provisioning/datasources
+      - ./volumes/grafana/provision/dashboards:/etc/grafana/provisioning/dashboards
     depends_on:
       - influxdb
+      - questdb
     environment:
       GF_SECURITY_ADMIN_USER: iotvisual
       GF_SECURITY_ADMIN_PASSWORD: f8dec042
