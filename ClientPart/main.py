@@ -1,99 +1,55 @@
-import pyaudio
-import wave
-import time
-import keyboard
-# import librosa
+import sounddevice as sd
 import numpy as np
-import scipy
-# from sound_to_midi.monophonic import wave_to_midi
+import scipy.fftpack
+import os
 
-CHUNK = 1024
-FORMAT = pyaudio.paFloat32
-CHANNELS = 2
-RATE = 48000
-RECORD_SECONDS = 5
-WAVE_OUTPUT_FILENAME = "output.wav"
+# General settings
+SAMPLE_FREQ = 44100 # sample frequency in Hz
+WINDOW_SIZE = 44100 # window size of the DFT in samples
+WINDOW_STEP = 21050 # step size of window
+WINDOW_T_LEN = WINDOW_SIZE / SAMPLE_FREQ # length of the window in seconds
+SAMPLE_T_LENGTH = 1 / SAMPLE_FREQ # length between two samples in seconds
+windowSamples = [0 for _ in range(WINDOW_SIZE)]
 
-p = pyaudio.PyAudio()
-stream: pyaudio.Stream = None
-frames = []
+# This function finds the closest note for a given pitch
+# Returns: note (e.g. A4, G#3, ..), pitch of the tone
+CONCERT_PITCH = 440
+ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
+def find_closest_note(pitch):
+  i = int(np.round(np.log2(pitch/CONCERT_PITCH)*12))
+  closest_note = ALL_NOTES[i%12] + str(4 + (i + 9) // 12)
+  closest_pitch = CONCERT_PITCH*2**(i/12)
+  return closest_note, closest_pitch
 
-def main():
-    global stream
-    global frames
-    global p
+# The sounddecive callback function
+# Provides us with new data once WINDOW_STEP samples have been fetched
+def callback(indata, frames, time, status):
+  global windowSamples
+  if status:
+    print(status)
+  if any(indata):
+    windowSamples = np.concatenate((windowSamples,indata[:, 0])) # append new samples
+    windowSamples = windowSamples[len(indata[:, 0]):] # remove old samples
+    magnitudeSpec = abs(scipy.fftpack.fft(windowSamples)[:len(windowSamples)//2] )
 
-    info = p.get_host_api_info_by_index(0)
-    numdevices = info.get('deviceCount')
+    for i in range(int(62/(SAMPLE_FREQ/WINDOW_SIZE))):
+      magnitudeSpec[i] = 0 #suppress mains hum
 
-    for i in range(0, numdevices):
-        if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
-            print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
+    maxInd = np.argmax(magnitudeSpec)
+    maxFreq = maxInd * (SAMPLE_FREQ/WINDOW_SIZE)
+    closestNote, closestPitch = find_closest_note(maxFreq)
 
-    input_device = int(input("Enter input device id: "))
+    # os.system('cls' if os.name=='nt' else 'clear')
+    print(f"Closest note: {closestNote} {maxFreq:.1f}/{closestPitch:.1f}")
+  else:
+    print('no input')
 
-    stream = p.open(format=FORMAT,
-                    channels=1,
-                    rate=RATE,
-                    input=True,
-                    frames_per_buffer=CHUNK,
-                    input_device_index=input_device)
-
-    for i in range(5):
-        print("recording in", 5 - i, "seconds")
-        time.sleep(1)
-
-    print("* recording")
-
+# Start the microphone input stream
+try:
+  with sd.InputStream(channels=1, callback=callback,
+    blocksize=WINDOW_STEP,
+    samplerate=SAMPLE_FREQ):
     while True:
-        data = stream.read(CHUNK)
-        frames.append(data)
-
-        peakfreq=0.0
-        if(stream):
-            tdarray=np.frombuffer(data, dtype=np.float32)
-
-            fftarray=np.fft.fft(tdarray)
-
-            nyquist=.5*RATE
-
-            denom,numer=scipy.signal.butter(5,[4/nyquist, 10000/nyquist],btype="band")  
-            ffftarray=scipy.signal.lfilter(denom,numer,fftarray)
-
-            freqarray=np.fft.fftfreq(tdarray.size)
-
-            ind=np.argmax(np.abs(ffftarray)**2)
-
-            peakfreq=np.abs(freqarray[ind])*RATE
-            
-            frequency=peakfreq
-
-            print(frequency)
-
-        if keyboard.is_pressed('q'):
-            print("* done recording")
-
-            stream.stop_stream()
-            stream.close()
-            p.terminate()
-
-            wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-            wf.setnchannels(CHANNELS)
-            wf.setsampwidth(p.get_sample_size(FORMAT))
-            wf.setframerate(RATE)
-            wf.writeframes(b''.join(frames))
-            wf.close()
-
-            
-            # x = np.frombuffer(b''.join(frames), dtype=np.int16)
-            # test = librosa.feature.mfcc(y=x.astype(np.float16), sr=RATE, )
-            # midi = wave_to_midi(audio_signal=test.astype(np.float16), srate=RATE, frame_length=CHUNK)
-        
-            # print(test.astype(np.float32))
-            
-            # with open ("output.mid", 'wb') as f:
-            #     midi.writeFile(f)
-
-            break
-
-main()
+      pass
+except Exception as e:
+    print(str(e))
