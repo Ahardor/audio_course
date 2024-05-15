@@ -56,6 +56,8 @@ func New(ctx context.Context) *Server {
 		cacher.WithExpirationTime(10*time.Minute),
 		cacher.WithCleanupInterval(15*time.Minute),
 	)
+
+	s.noteTable = table.InitTable()
 	return s
 }
 

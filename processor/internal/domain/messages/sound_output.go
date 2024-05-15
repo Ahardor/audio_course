@@ -30,8 +30,8 @@ type MessageSoundOutput struct {
 
 // String реализация интерфейса Stringer.
 func (m MessageSoundOutput) String() string {
-	s := fmt.Sprintf("\nDevice: %v\nSessionUUID: %v\nMelody: %v\n\tExpectedNote: %v\n\tActualNote: %v\n\tExpectedDuration: %v\n\tActualDuration: %v\n",
-		m.Device, m.SessionUUID, m.Melody, m.ExpectedNote, m.ActualNote, m.ExpectedLengthSeconds, m.ActualLengthSeconds,
+	s := fmt.Sprintf("\nDevice: %v\nSessionUUID: %v\nMelody: %v\n\tExpectedNote: %v\n\tActualNote: %v\n\tExpectedFreq: %v\n\tActualFreq: %v\n\tExpectedDuration: %v\n\tActualDuration: %v\n",
+		m.Device, m.SessionUUID, m.Melody, m.ExpectedNote, m.ActualNote, m.ExpectedFrequency, m.ActualFrequency, m.ExpectedLengthSeconds, m.ActualLengthSeconds,
 	)
 	return s
 }

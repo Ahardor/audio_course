@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"iotvisual/processor/internal/domain/melody"
 	"iotvisual/processor/internal/domain/messages"
 	"iotvisual/processor/internal/pkg/cacher"
@@ -45,7 +46,8 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 		}
 
 		note := s.noteTable.FindNote(input.Frequency)
-
+		fmt.Println("NOTE: ", sound.Note)
+		fmt.Println("OCTAVE: ", sound.Octave)
 		output := messages.MessageSoundOutput{
 			Device:                input.Device,
 			Melody:                input.Melody,
@@ -54,7 +56,7 @@ func (s *Server) MelodyEventHandler(ctx context.Context) mqtt.MessageHandler {
 			ActualNote:            note.GetNote(),
 			ExpectedLengthSeconds: float64(sound.DurationMS) / 1000,
 			ActualLengthSeconds:   float64(input.LengthMS) / 1000,
-			ExpectedFrequency:     float64(s.noteTable.GetFrequency(note, sound.Octave)) / 100,
+			ExpectedFrequency:     float64(s.noteTable.GetFrequency(sound.Note, sound.Octave)) / 100,
 			ActualFrequency:       input.Frequency,
 		}
 
