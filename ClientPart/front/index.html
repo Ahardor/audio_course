@@ -17,13 +17,29 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                flex-direction: row;
                 height: 100vh;
             }
 
-            .note {
-                color: white;
-                font-size: 15rem;
+            .notes {
+                color: gray;
+                font-size: 1rem;
                 font-family: sans-serif;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+            }
+
+            .time {
+                display: flex;
+                justify-content: left;
+                align-items: center;
+            }
+
+            .time > div {
+                background-color: gray;
+                height: 1rem;
             }
         </style>
         <script
@@ -32,15 +48,84 @@
     </head>
     <body>
         <div class="main">
-            <div class="note">A5</div>
+            <!-- <div class="note"></div> -->
+            <div class="notes"></div>
         </div>
     </body>
 
     <script>
         eel.expose(changeNote);
+        var ALL_NOTES_LETTERS = [
+            "A",
+            "A#",
+            "B",
+            "C",
+            "C#",
+            "D",
+            "D#",
+            "E",
+            "F",
+            "F#",
+            "G",
+            "G#",
+        ];
+        var allNotes = [];
 
-        function changeNote(note) {
-            document.querySelector(".note").innerHTML = note;
+        for (var j = 1; j < 7; j++) {
+            for (var i = 0; i < 12; i++) {
+                allNotes.push(ALL_NOTES_LETTERS[i] + j);
+            }
+        }
+        eel.consoleLog(allNotes);
+
+        var min = "";
+        var max = "";
+
+        const divider = 10;
+
+        function changeNote(note_array) {
+            console.log(note_array);
+            var result = "";
+            var notes = {};
+
+            var offset = 0;
+
+            for (var i of allNotes) {
+                notes[i] = [];
+            }
+
+            for (var n of note_array) {
+                console.log(n);
+                if (n["time"] < 100) {
+                    continue;
+                }
+                if (n["note"] != "...") {
+                    notes[n["note"]].push({
+                        time: n["time"],
+                        offset: offset,
+                    });
+                }
+                offset += n["time"];
+            }
+
+            for (var n in notes) {
+                console.log(n);
+                if (notes[n].length > 0) {
+                    var noteRes = "";
+                    var curLen = 0;
+                    for (var i of notes[n]) {
+                        noteRes += `<div style="
+                            width: ${i["time"] / divider}px;
+                            margin-left: ${i["offset"] / divider - curLen}px;
+                        "></div>`;
+
+                        curLen = i["offset"] / divider + i["time"] / divider;
+                    }
+                    result += `<div class="time">${n} ${noteRes}</div>`;
+                }
+            }
+
+            document.querySelector(".notes").innerHTML = result;
         }
     </script>
 </html>

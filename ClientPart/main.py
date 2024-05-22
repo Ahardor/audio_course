@@ -35,12 +35,17 @@ def find_closest_note(pitch):
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 
 old_closest_note = 'A0'
+old_time_point = time.time_ns()
+
+notes_array = []
 
 
 # The sounddecive callback function
 # Provides us with new data once WINDOW_STEP samples have been fetched
-def callback(indata, frames, time, status):
+def callback(indata, frames, time_data, status):
   global old_closest_note
+  global old_time_point
+
   if not hasattr(callback, "window_samples"):
     callback.window_samples = [0 for _ in range(WINDOW_SIZE)]
   if not hasattr(callback, "noteBuffer"):
@@ -54,10 +59,13 @@ def callback(indata, frames, time, status):
 
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
     if signal_power < POWER_THRESH:
-      # os.system('cls' if os.name=='nt' else 'clear')
       if(old_closest_note != '...'):
-        # print("Closest note: ...")
         old_closest_note = '...'
+        old_time_point = time.time_ns()
+        notes_array.append({'note': '...', 'time': 0, 'point': old_time_point})
+      else:
+        notes_array[-1]['time'] = (time.time_ns() - old_time_point) / 1000000
+        # print(f"Closest note: {notes_array[-1]['note']} ({notes_array[-1]['time']}ms)")
       return
     
     hann_samples = callback.window_samples * HANN_WINDOW
@@ -105,8 +113,26 @@ def callback(indata, frames, time, status):
     # if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
     if old_closest_note != closest_note:
       old_closest_note = closest_note
-      eel.changeNote(closest_note)
-      print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+      old_time_point = time.time_ns()
+      if len(notes_array) > 0:
+        if (notes_array[-1]['time'] < 100):
+          notes_array.pop()
+          if len(notes_array) > 0 and notes_array[-1]['note'] == closest_note:
+            old_time_point = notes_array[-1]['point']
+          else:
+            notes_array.append({'note': closest_note, 'time': 0, 'point': old_time_point})
+        else:
+          notes_array.append({'note': closest_note, 'time': 0, 'point': old_time_point})
+      else:
+        notes_array.append({'note': closest_note, 'time': 0, 'point': old_time_point})
+
+    else:
+      notes_array[-1]['time'] = (time.time_ns() - old_time_point) / 1000000
+      # print(f"Closest note: {notes_array[-1]['note']} ({notes_array[-1]['time']}ms)")
+
+      if(notes_array[0]['note'] == '...'):
+        notes_array.pop(0)
+      eel.changeNote(notes_array)
     # else:
     #   print(f"Closest note: ...")
   else:
@@ -135,6 +161,10 @@ def detect():
         pass
   except Exception as e:
     print(str(e))
+
+@eel.expose
+def consoleLog(message):
+  print(message)
 
 eel.init('ClientPart/front')
 eel.spawn(detect)
