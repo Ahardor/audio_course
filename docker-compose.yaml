@@ -130,6 +130,21 @@ services:
     networks:
       - default
 
+  guitar:
+    container_name: guitar
+    build: 
+      context: .
+      dockerfile: ./ClientPart/dockerfile
+    ports:
+      - "7300:7300"
+    depends_on:
+      - mosquitto
+      - influxdb
+      - telegraf
+      - processor
+    networks:
+      - default
+
 networks:
   default:
     driver: bridge
