@@ -1,0 +1,18 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB_v2_Flux
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    user: iotvisual
+    password: f8dec042
+    editable: true
+    isDefault: false
+    jsonData:
+      version: Flux
+      organization: mai
+      defaultBucket: iot_visual
+      tlsSkipVerify: true
+    secureJsonData:
+      token: mytoken

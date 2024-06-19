@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  processor:
+    container_name: processor
+    build: 
+      context: .
+      dockerfile: ./processor/Dockerfile
+    ports:
+      - "7259:7259"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - default
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: iot
+      MONGO_INITDB_ROOT_PASSWORD: iotpass
+      MONGO_INITDB_DATABASE: iot
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

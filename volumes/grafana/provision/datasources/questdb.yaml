@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: QuestDB
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: questdb:8812
+    user: admin
+    editable: true
+    isDefault: true
+    database: qdb
+    jsonData:
+      sslmode: disable
+    secureJsonData:
+      password: quest

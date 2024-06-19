@@ -1,0 +1,150 @@
+version: '3.8'
+
+services:
+  input_mock:
+    container_name: input_mock
+    build: 
+      context: .
+      dockerfile: ./mock/Dockerfile
+    volumes:
+      - ./volumes/mock_data:/app/data
+    ports:
+      - "7249:7249"
+    depends_on:
+      - mosquitto
+      - influxdb
+      - telegraf
+      - processor
+    networks:
+      - default
+
+  processor:
+    container_name: processor
+    build: 
+      context: .
+      dockerfile: ./processor/Dockerfile
+    volumes:
+      - ./volumes/processor_data:/app/data
+    ports:
+      - "7259:7259"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - default
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:latest
+    volumes:
+      - ./volumes/mosquitto:/mosquitto/config
+    ports:
+      - "1883:1883"
+    restart: unless-stopped
+    networks:
+      - default
+
+  telegraf:
+    container_name: telegraf
+    image: telegraf:1.30-alpine
+    volumes:
+      - ./volumes/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+    depends_on:
+      - influxdb
+      - questdb
+    restart: unless-stopped
+    networks:
+      - default
+
+  influxdb:
+    container_name: influxdb
+    image: influxdb:latest
+    environment:
+        DOCKER_INFLUXDB_INIT_MODE: setup
+        DOCKER_INFLUXDB_INIT_USERNAME: iotvisual
+        DOCKER_INFLUXDB_INIT_PASSWORD: f8dec042
+        DOCKER_INFLUXDB_INIT_ORG: mai
+        DOCKER_INFLUXDB_INIT_BUCKET: iot_visual
+        DOCKER_INFLUXDB_INIT_RETENTION: 1w
+        DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: mytoken
+    healthcheck:
+      test: ["CMD","influx", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+      start_period: 1s
+    ports:
+      - "8086:8086"
+    networks:
+      - default
+
+  questdb:
+    container_name: questdb
+    image: questdb/questdb:latest
+    environment:
+      - QDB_PG_READONLY_USER_ENABLED=true
+    ports:
+      - "9000:9000"
+      - "9009:9009"
+      - "9003:9003"
+      - "8812:8812"
+    networks:
+      - default
+    
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: iot
+      MONGO_INITDB_ROOT_PASSWORD: iotpass
+    command: mongod --quiet --logpath /dev/null 
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 1s
+    networks:
+      - default
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./volumes/grafana/provision/datasources:/etc/grafana/provisioning/datasources
+      - ./volumes/grafana/provision/dashboards:/etc/grafana/provisioning/dashboards
+      - ./volumes/grafana/ini/grafana.ini:/etc/grafana/grafana.ini
+    depends_on:
+      - influxdb
+      - questdb
+    environment:
+      GF_SECURITY_ADMIN_USER: iotvisual
+      GF_SECURITY_ADMIN_PASSWORD: f8dec042
+    user:
+      "1000"
+    networks:
+      - default
+
+  guitar:
+    container_name: guitar
+    build: 
+      context: .
+      dockerfile: ./ClientPart/dockerfile
+    ports:
+      - "7300:7300"
+    depends_on:
+      - mosquitto
+      - influxdb
+      - telegraf
+      - processor
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
